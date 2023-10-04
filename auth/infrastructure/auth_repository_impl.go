@@ -30,5 +30,9 @@ func (d *DatabaseAuthRepository) Create(user domain.User) (domain.User, error) {
 
 // GetUser implements domain.AuthRepository.
 func (d *DatabaseAuthRepository) GetUser(email string) (domain.User, error) {
-	panic("unimplemented")
+	var user domain.User
+
+	err := d.db.Where("email= ?", email).First(&user).Error
+
+	return user, err
 }

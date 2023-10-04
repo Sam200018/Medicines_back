@@ -13,3 +13,7 @@ func NewUseCasesAuth(authRepo domain.AuthRepository) *AuthUseCase {
 func (auc *AuthUseCase) CreateUser(user domain.User) (domain.User, error) {
 	return auc.authRepo.Create(user)
 }
+
+func (auc *AuthUseCase) GetUser(email string) (domain.User, error) {
+	return auc.authRepo.GetUser(email)
+}
