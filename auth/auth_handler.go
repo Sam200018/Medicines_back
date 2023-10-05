@@ -80,6 +80,7 @@ func (authHand *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	response := map[string]interface{}{
 		"message": "Login successfully",
 		"token":   tokenString,
+		"user":    user,
 	}
 
 	json.NewEncoder(w).Encode(response)
@@ -130,8 +131,9 @@ func (authHand *AuthHandler) CheckStatus(w http.ResponseWriter, r *http.Request)
 	}
 
 	response := map[string]interface{}{
-		"message":       "Login successfully",
-		"updated_token": tokenString,
+		"message": "Login successfully",
+		"token":   tokenString,
+		"user":    user,
 	}
 
 	json.NewEncoder(w).Encode(response)

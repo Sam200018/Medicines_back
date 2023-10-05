@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"errors"
-
 	"github.com/Samuel200018/pills_backend/auth/domain"
 	"gorm.io/gorm"
 )
@@ -33,6 +32,22 @@ func (d *DatabaseAuthRepository) GetUser(email string) (domain.User, error) {
 	var user domain.User
 
 	err := d.db.Where("email= ?", email).First(&user).Error
+
+	return user, err
+}
+
+func (d *DatabaseAuthRepository) AddHouse(id string, idHouse uint) (domain.User, error) {
+	var user domain.User
+
+	err := d.db.First(&user, id).Error
+
+	if err != nil {
+		return domain.User{}, errors.New("User not found")
+	}
+
+	user.HouseID = idHouse
+
+	err = d.db.Updates(&user).Error
 
 	return user, err
 }

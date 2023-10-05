@@ -17,3 +17,7 @@ func (auc *AuthUseCase) CreateUser(user domain.User) (domain.User, error) {
 func (auc *AuthUseCase) GetUser(email string) (domain.User, error) {
 	return auc.authRepo.GetUser(email)
 }
+
+func (auc *AuthUseCase) AddHouse(id string, idHouse uint) (domain.User, error) {
+	return auc.authRepo.AddHouse(id, idHouse)
+}
