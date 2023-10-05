@@ -6,6 +6,10 @@ import (
 	"github.com/Samuel200018/pills_backend/auth/domain"
 	"github.com/Samuel200018/pills_backend/auth/infrastructure"
 	"github.com/Samuel200018/pills_backend/db"
+	"github.com/Samuel200018/pills_backend/house"
+	appHouse "github.com/Samuel200018/pills_backend/house/application"
+	domHouse "github.com/Samuel200018/pills_backend/house/domain"
+	infraHouse "github.com/Samuel200018/pills_backend/house/infrastructure"
 	"log"
 	"net/http"
 
@@ -18,6 +22,8 @@ func main() {
 	db.Connection()
 
 	err := db.DB.AutoMigrate(&domain.User{})
+	err = db.DB.AutoMigrate(&domHouse.House{})
+
 	if err != nil {
 		log.Print("Error auto migrate")
 		return
@@ -26,10 +32,13 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	userRepository := infrastructure.NewDatabaseAuthRepository(db.DB)
+	houseRepository := infraHouse.NewDatabaseHouseRepository(db.DB)
 
 	userUseCases := application.NewUseCasesAuth(userRepository)
+	houseUseCases := appHouse.NewNewCasesHouse(houseRepository)
 
 	authHandler := auth.NewAuthHandler(*userUseCases)
+	houseHandler := house.NewHouseHandler(*houseUseCases, *userUseCases)
 
 	router.HandleFunc("/", home.HomeHandler)
 
@@ -38,10 +47,13 @@ func main() {
 	router.HandleFunc("/login", authHandler.Login).Methods("GET")
 
 	//Protected routes
+	//Auth
 	protectedRoutes := router.PathPrefix("/api").Subrouter()
 	protectedRoutes.Use(auth.JwtVerify)
 	protectedRoutes.HandleFunc("/check-status", authHandler.CheckStatus).Methods("GET")
 	protectedRoutes.HandleFunc("/logout", authHandler.Logout).Methods("POST")
+	//House
+	protectedRoutes.HandleFunc("/create-house", houseHandler.CreateHouse)
 
 	log.Fatal(
 		http.ListenAndServe(":3800", router),
