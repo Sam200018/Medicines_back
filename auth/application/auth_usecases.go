@@ -21,3 +21,11 @@ func (auc *AuthUseCase) GetUser(email string) (domain.User, error) {
 func (auc *AuthUseCase) AddHouse(id string, idHouse uint) (domain.User, error) {
 	return auc.authRepo.AddHouse(id, idHouse)
 }
+
+func (auc *AuthUseCase) UsersWithHouseId(idHouse uint) (int64, error) {
+	return auc.authRepo.UsersWithHouseId(idHouse)
+}
+
+func (auc *AuthUseCase) ExitHouse(id string) (domain.User, error) {
+	return auc.authRepo.ExitHouse(id)
+}
