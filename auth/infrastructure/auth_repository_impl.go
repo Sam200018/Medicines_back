@@ -51,3 +51,25 @@ func (d *DatabaseAuthRepository) AddHouse(id string, idHouse uint) (domain.User,
 
 	return user, err
 }
+
+func (d *DatabaseAuthRepository) UsersWithHouseId(idHouse uint) (int64, error) {
+	var countUsers int64
+
+	err := d.db.Model(&domain.User{}).Where("house_id =?", idHouse).Count(&countUsers).Error
+	return countUsers, err
+}
+
+func (d *DatabaseAuthRepository) ExitHouse(id string) (domain.User, error) {
+	var user domain.User
+	err := d.db.First(&user, id).Error
+
+	if err != nil {
+		return domain.User{}, errors.New("Users not found")
+	}
+
+	user.HouseID = 0
+
+	err = d.db.Save(&user).Error
+
+	return user, err
+}
