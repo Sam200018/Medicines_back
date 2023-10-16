@@ -40,8 +40,8 @@ func (houseHad *HouseHandler) CreateHouse(w http.ResponseWriter, r *http.Request
 	}
 
 	response := map[string]interface{}{
-		"message":      "House created successfully",
-		"user_updated": userUpdated,
+		"message": "House created successfully",
+		"user":    userUpdated,
 	}
 	json.NewEncoder(w).Encode(response)
 }
@@ -86,14 +86,13 @@ func (houseHad *HouseHandler) ExitHouse(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if countUsers > 1 {
-		//	Eliminar house\
+	if countUsers == 1 {
+		//	Eliminar house
 		err := houseHad.houseUseCases.DeleteHouse(houseFromRequest)
 		if err != nil {
 			http.Error(w, "Error deleting house", http.StatusBadRequest)
 			return
 		}
-
 	}
 
 	userUpdated, err := houseHad.authUsesCases.ExitHouse(userId)
@@ -105,8 +104,8 @@ func (houseHad *HouseHandler) ExitHouse(w http.ResponseWriter, r *http.Request) 
 	}
 
 	response := map[string]interface{}{
-		"message":      "Exit house successfully",
-		"user_updated": userUpdated,
+		"message": "Exit house successfully",
+		"user":    userUpdated,
 	}
 	json.NewEncoder(w).Encode(response)
 
