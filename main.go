@@ -53,9 +53,9 @@ func main() {
 	protectedRoutes.HandleFunc("/check-status", authHandler.CheckStatus).Methods("GET")
 	protectedRoutes.HandleFunc("/logout", authHandler.Logout).Methods("POST")
 	//House
-	protectedRoutes.HandleFunc("/create-house", houseHandler.CreateHouse)
-	protectedRoutes.HandleFunc("/join-house/{house-id}", houseHandler.JoinHouse)
-	protectedRoutes.HandleFunc("/exit-house/{house-id}", houseHandler.ExitHouse)
+	protectedRoutes.HandleFunc("/create-house", houseHandler.CreateHouse).Methods("POST")
+	protectedRoutes.HandleFunc("/join-house/{house-id}", houseHandler.JoinHouse).Methods("PUT")
+	protectedRoutes.HandleFunc("/exit-house/{house-id}", houseHandler.ExitHouse).Methods("DELETE")
 
 	log.Fatal(
 		http.ListenAndServe(":3800", router),
