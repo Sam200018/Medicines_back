@@ -7,7 +7,6 @@ import (
 	"github.com/Samuel200018/pills_backend/house/domain"
 	"github.com/gorilla/mux"
 	"net/http"
-	"strconv"
 )
 
 type HouseHandler struct {
@@ -48,23 +47,28 @@ func (houseHad *HouseHandler) CreateHouse(w http.ResponseWriter, r *http.Request
 
 func (houseHad *HouseHandler) JoinHouse(w http.ResponseWriter, r *http.Request) {
 	houseFromRequest := mux.Vars(r)["house-id"]
-	parseUint, err := strconv.ParseUint(houseFromRequest, 10, 32)
-	if err != nil {
-		http.Error(w, "Error parsing string", http.StatusBadRequest)
+
+	userId := r.FormValue("user_id")
+	if userId == "" {
+		http.Error(w, "Empty user id", http.StatusBadRequest)
 		return
 	}
-	houseId := uint(parseUint)
-	userId := r.FormValue("user_id")
 
-	userUpdated, err := houseHad.authUsesCases.AddHouse(userId, houseId)
+	house, err := houseHad.houseUseCases.GetHouseById(houseFromRequest)
+	if err != nil {
+		http.Error(w, "House not found", http.StatusNotFound)
+		return
+	}
+
+	userUpdated, err := houseHad.authUsesCases.AddHouse(userId, house.ID)
 	if err != nil {
 		http.Error(w, "Error joining to house", http.StatusBadRequest)
 		return
 	}
 
 	response := map[string]interface{}{
-		"message":      "House created successfully",
-		"user_updated": userUpdated,
+		"message": "Joined to house successfully",
+		"user":    userUpdated,
 	}
 	json.NewEncoder(w).Encode(response)
 
@@ -72,22 +76,26 @@ func (houseHad *HouseHandler) JoinHouse(w http.ResponseWriter, r *http.Request) 
 
 func (houseHad *HouseHandler) ExitHouse(w http.ResponseWriter, r *http.Request) {
 	houseFromRequest := mux.Vars(r)["house-id"]
-	parseUint, err := strconv.ParseUint(houseFromRequest, 10, 32)
-	if err != nil {
-		http.Error(w, "Error parsing string", http.StatusBadRequest)
+
+	userId := r.FormValue("user_id")
+	if userId == "" {
+		http.Error(w, "Empty user id", http.StatusBadRequest)
 		return
 	}
-	houseId := uint(parseUint)
-	userId := r.FormValue("user_id")
 
-	countUsers, err := houseHad.authUsesCases.UsersWithHouseId(houseId)
+	house, err := houseHad.houseUseCases.GetHouseById(houseFromRequest)
+	if err != nil {
+		http.Error(w, "House not found", http.StatusNotFound)
+		return
+	}
+
+	countUsers, err := houseHad.authUsesCases.UsersWithHouseId(house.ID)
 	if err != nil {
 		http.Error(w, "Error counting users with house id", http.StatusBadRequest)
 		return
 	}
 
 	if countUsers == 1 {
-		//	Eliminar house
 		err := houseHad.houseUseCases.DeleteHouse(houseFromRequest)
 		if err != nil {
 			http.Error(w, "Error deleting house", http.StatusBadRequest)
