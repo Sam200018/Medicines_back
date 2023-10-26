@@ -6,7 +6,7 @@ type HouseUseCase struct {
 	homeRepo domain.HouseRepository
 }
 
-func NewNewCasesHouse(homeRepo domain.HouseRepository) *HouseUseCase {
+func NewUseCasesHouse(homeRepo domain.HouseRepository) *HouseUseCase {
 	return &HouseUseCase{homeRepo}
 }
 
